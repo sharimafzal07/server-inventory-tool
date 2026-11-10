@@ -13,3 +13,8 @@ def las_servrar(filnamn):
         return []
     with open(filnamn, "r", encoding="utf-8") as fil:
         return json.load(fil)
+
+
+def spara_servrar(servrar, filnamn):
+    with open(filnamn, "w", encoding="utf-8") as fil:
+        json.dump(servrar, fil, indent=2, ensure_ascii=False)
