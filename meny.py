@@ -1,7 +1,6 @@
 import lagring
 import kontroller
 
-
 def visa_servrar(servrar, miljo="alla"):
     print("NAMN      ADRESS          MILJO  ROLL                STATUS   SENAST KONTROLLERAD")
     print("--------------------------------------------------------------------------------")
@@ -10,13 +9,11 @@ def visa_servrar(servrar, miljo="alla"):
             continue
         print(f"{server['namn']:<10}{server['adress']:<16}{server['miljo']:<7}{server['roll']:<20}{server['status']:<9}{server['senast_kontrollerad']}")
 
-
 def ar_giltig_miljo(miljo):
     if miljo == "dev" or miljo == "test" or miljo == "prod":
         return True
     else:
         return False
-
 
 def namn_finns(servrar, namn):
     for server in servrar:
@@ -24,6 +21,11 @@ def namn_finns(servrar, namn):
             return True
     return False
 
+def hitta_server(servrar, namn):
+    for server in servrar:
+        if server["namn"] == namn:
+            return server
+    return None
 
 def lagg_till_server(servrar):
     namn = input("Namn: ")
@@ -47,6 +49,19 @@ def lagg_till_server(servrar):
     servrar.append(server)
     print(f"Servern {namn} lades till.")
 
+def ta_bort_server(servrar):
+    namn = input("Namn på servern som ska tas bort: ")
+    server = hitta_server(servrar, namn)
+    if server is None:
+        print("Hittade ingen server med det namnet.")
+        return
+    if server["miljo"] == "prod":
+        svar = input("Det här är en prod-server. Skriv ja för att bekräfta: ")
+        if svar != "ja":
+            print("Avbröt. Ingenting togs bort.")
+            return
+    servrar.remove(server)
+    print(f"Servern {namn} togs bort.")
 
 def visa_meny():
     print()
@@ -59,7 +74,6 @@ def visa_meny():
     print("6. Kontrollera alla servrar")
     print("7. Exportera rapport (CSV)")
     print("8. Avsluta")
-
 
 def kor_meny():
     filnamn = lagring.hamta_datafil()
@@ -74,6 +88,9 @@ def kor_meny():
             visa_servrar(servrar, miljo)
         elif val == "3":
             lagg_till_server(servrar)
+            lagring.spara_servrar(servrar, filnamn)
+        elif val == "4":
+            ta_bort_server(servrar)
             lagring.spara_servrar(servrar, filnamn)
         elif val == "8":
             print("Hej då!")
