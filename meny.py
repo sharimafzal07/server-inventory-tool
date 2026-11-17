@@ -1,13 +1,17 @@
 import lagring
 import kontroller
 
+
 def visa_servrar(servrar, miljo="alla"):
     print("NAMN      ADRESS          MILJO  ROLL                STATUS   SENAST KONTROLLERAD")
     print("--------------------------------------------------------------------------------")
     for server in servrar:
+        # Hoppa över servrar i andra miljöer när ett filter är valt
         if miljo != "alla" and server["miljo"] != miljo:
             continue
+        # :<10 betyder vänsterjusterat i ett fält som är 10 tecken brett
         print(f"{server['namn']:<10}{server['adress']:<16}{server['miljo']:<7}{server['roll']:<20}{server['status']:<9}{server['senast_kontrollerad']}")
+
 
 def ar_giltig_miljo(miljo):
     if miljo == "dev" or miljo == "test" or miljo == "prod":
@@ -15,17 +19,18 @@ def ar_giltig_miljo(miljo):
     else:
         return False
 
-def namn_finns(servrar, namn):
-    for server in servrar:
-        if server["namn"] == namn:
-            return True
-    return False
 
 def hitta_server(servrar, namn):
+    # Returnerar servern med rätt namn, eller None om den inte finns
     for server in servrar:
         if server["namn"] == namn:
             return server
     return None
+
+
+def namn_finns(servrar, namn):
+    return hitta_server(servrar, namn) is not None
+
 
 def lagg_till_server(servrar):
     namn = input("Namn: ")
@@ -34,6 +39,7 @@ def lagg_till_server(servrar):
         return
     adress = input("Adress: ")
     miljo = input("Miljö (dev/test/prod): ")
+    # Fråga igen tills användaren anger en giltig miljö
     while not ar_giltig_miljo(miljo):
         print("Ogiltig miljö. Ange dev, test eller prod.")
         miljo = input("Miljö (dev/test/prod): ")
@@ -49,12 +55,14 @@ def lagg_till_server(servrar):
     servrar.append(server)
     print(f"Servern {namn} lades till.")
 
+
 def ta_bort_server(servrar):
     namn = input("Namn på servern som ska tas bort: ")
     server = hitta_server(servrar, namn)
     if server is None:
         print("Hittade ingen server med det namnet.")
         return
+    # Extra bekräftelse för servrar i produktion
     if server["miljo"] == "prod":
         svar = input("Det här är en prod-server. Skriv ja för att bekräfta: ")
         if svar != "ja":
@@ -62,6 +70,7 @@ def ta_bort_server(servrar):
             return
     servrar.remove(server)
     print(f"Servern {namn} togs bort.")
+
 
 def kontrollera_en_server(servrar):
     namn = input("Namn på servern som ska kontrolleras: ")
@@ -72,14 +81,11 @@ def kontrollera_en_server(servrar):
     status = kontroller.kontrollera_server(server)
     print(f"{namn} är {status}.")
 
-def kontrollera_alla_servrar(servrar):
-    for server in servrar:
-        status = kontroller.kontrollera_server(server)
-        print(f"{server['namn']} är {status}.")
 
 def exportera_rapport(servrar):
     sokvag = lagring.exportera_csv(servrar)
     print(f"Rapporten sparades i {sokvag}")
+
 
 def visa_meny():
     print()
@@ -93,9 +99,11 @@ def visa_meny():
     print("7. Exportera rapport (CSV)")
     print("8. Avsluta")
 
+
 def kor_meny():
     filnamn = lagring.hamta_datafil()
     servrar = lagring.las_servrar(filnamn)
+    # Menyn körs tills användaren väljer att avsluta
     while True:
         visa_meny()
         val = input("Välj ett alternativ: ")
@@ -114,7 +122,7 @@ def kor_meny():
             kontrollera_en_server(servrar)
             lagring.spara_servrar(servrar, filnamn)
         elif val == "6":
-            kontrollera_alla_servrar(servrar)
+            kontroller.kontrollera_alla_servrar(servrar)
             lagring.spara_servrar(servrar, filnamn)
         elif val == "7":
             exportera_rapport(servrar)

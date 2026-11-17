@@ -7,6 +7,7 @@ import meny
 
 
 def skapa_tolk():
+    # Beskriver vilka flaggor programmet förstår. --help skapas automatiskt
     tolk = argparse.ArgumentParser(
         description="Server Inventory Tool - håll koll på dina servrar"
     )
@@ -35,6 +36,7 @@ def main():
     args = skapa_tolk().parse_args()
     filnamn = lagring.hamta_datafil()
     servrar = lagring.las_servrar(filnamn)
+    # 0 betyder att allt gick bra, 1 betyder att något var nere eller saknades
     utgangskod = 0
 
     if args.lista:
@@ -53,11 +55,9 @@ def main():
             lagring.spara_servrar(servrar, filnamn)
 
     if args.kontrollera_alla:
-        for server in servrar:
-            status = kontroller.kontrollera_server(server)
-            print(f"{server['namn']} är {status}.")
-            if status == "down":
-                utgangskod = 1
+        antal_nere = kontroller.kontrollera_alla_servrar(servrar)
+        if antal_nere > 0:
+            utgangskod = 1
         lagring.spara_servrar(servrar, filnamn)
 
     if args.export:
@@ -67,5 +67,6 @@ def main():
     sys.exit(utgangskod)
 
 
+# Körs bara när filen startas direkt, inte när den importeras
 if __name__ == "__main__":
     main()
