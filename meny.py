@@ -63,6 +63,24 @@ def ta_bort_server(servrar):
     servrar.remove(server)
     print(f"Servern {namn} togs bort.")
 
+def kontrollera_en_server(servrar):
+    namn = input("Namn på servern som ska kontrolleras: ")
+    server = hitta_server(servrar, namn)
+    if server is None:
+        print("Hittade ingen server med det namnet.")
+        return
+    status = kontroller.kontrollera_server(server)
+    print(f"{namn} är {status}.")
+
+def kontrollera_alla_servrar(servrar):
+    for server in servrar:
+        status = kontroller.kontrollera_server(server)
+        print(f"{server['namn']} är {status}.")
+
+def exportera_rapport(servrar):
+    sokvag = lagring.exportera_csv(servrar)
+    print(f"Rapporten sparades i {sokvag}")
+
 def visa_meny():
     print()
     print("=== Server Inventory Tool ===")
@@ -92,6 +110,14 @@ def kor_meny():
         elif val == "4":
             ta_bort_server(servrar)
             lagring.spara_servrar(servrar, filnamn)
+        elif val == "5":
+            kontrollera_en_server(servrar)
+            lagring.spara_servrar(servrar, filnamn)
+        elif val == "6":
+            kontrollera_alla_servrar(servrar)
+            lagring.spara_servrar(servrar, filnamn)
+        elif val == "7":
+            exportera_rapport(servrar)
         elif val == "8":
             print("Hej då!")
             break
