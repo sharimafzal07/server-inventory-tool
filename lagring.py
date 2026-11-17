@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def hamta_datafil():
-    return os.getenv("INVENTORY_DATAFIL", "servrar.json")
+    return os.environ.get("INVENTORY_DATAFIL", "servrar.json")
 
 
 def las_servrar(filnamn):
