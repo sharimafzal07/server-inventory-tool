@@ -47,3 +47,4 @@ Jag har delat upp koden i fyra filer så att var och en har ett eget jobb:
 * Pythons dokumentation på docs.python.org, bara om du faktiskt slagit upp något där
 * Git och GitHub, för versionshanteringen
 * Terminalen i WSL och editorn nano, om du vill nämna verktygen
+* Jag har även använt mig av Claude AI för att förstå begrepp och några små detaljer som jag inte förstod direkt från kursmaterialen och sedan lite hjälp med principer också.
